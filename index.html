@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Dental Transcriptor</title>
+<style>
+:root{font-family:system-ui,-apple-system,"Segoe UI",sans-serif;color:#17212b;background:#f6f8fa}
+*{box-sizing:border-box}body{margin:0}main{max-width:760px;margin:48px auto;padding:0 16px}
+header{margin-bottom:24px}.tag{font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:#1769aa;font-weight:700}
+h1{font-size:36px;letter-spacing:-.04em;margin:8px 0}.intro,.privacy{color:#667481;line-height:1.6}
+.panel{background:white;border:1px solid #e2e7eb;border-radius:18px;padding:24px;box-shadow:0 8px 30px #1827380b}
+.top{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap}
+.timer{font-size:24px;font-weight:700;font-variant-numeric:tabular-nums}
+.actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:18px}
+button{border:0;border-radius:10px;padding:12px 16px;font:inherit;font-weight:650;cursor:pointer}
+button:disabled{opacity:.45;cursor:not-allowed}.primary{background:#1769aa;color:white}.secondary{background:#edf1f4;color:#17212b}.danger{background:#fff0f0;color:#a32b2b}
+#status{min-height:24px;margin-top:16px;color:#667481;font-size:14px;line-height:1.5}.error{color:#b42318!important}.success{color:#18794e!important}
+h2{font-size:17px;margin:28px 0 10px}textarea{width:100%;min-height:260px;padding:16px;border:1px solid #e2e7eb;border-radius:12px;font:15px/1.65 inherit;resize:vertical;color:#17212b}
+.privacy{font-size:12px;margin:18px 2px}@media(max-width:520px){main{margin:28px auto}.panel{padding:18px}h1{font-size:30px}}
+</style>
+</head>
+<body><main>
+<header><div class="tag">Herramienta de dictado</div><h1>Dental Transcriptor</h1><p class="intro">Graba el dictado de la consulta y obtén una transcripción editable. El texto no se convierte en una historia clínica ni se complementa con información adicional.</p></header>
+<section class="panel">
+<div class="top"><div><strong id="recordTitle">Listo para grabar</strong><div class="intro" id="recordSub">Usa el micrófono de tu dispositivo</div></div><div class="timer" id="timer">00:00</div></div>
+<div class="actions"><button class="primary" id="record">● Iniciar grabación</button><button class="secondary" id="stop" disabled>Detener</button><button class="danger" id="discard" disabled>Descartar</button></div>
+<div id="status" role="status" aria-live="polite">La grabación se enviará para transcripción cuando pulses “Transcribir audio”.</div>
+<div class="actions"><button class="primary" id="send" disabled>Transcribir audio</button></div>
+<h2>Transcripción</h2><textarea id="transcript" placeholder="Aquí aparecerá la transcripción. Podrás revisarla y editarla antes de copiarla."></textarea>
+<div class="actions"><button class="secondary" id="copy" disabled>Copiar transcripción</button></div>
+</section>
+<p class="privacy">Privacidad: la aplicación no mantiene un historial ni guarda permanentemente las grabaciones o transcripciones. El audio se envía al proveedor de transcripción para procesarlo. Antes de usarla con información identificable de pacientes, verifica las condiciones de tratamiento y protección de datos del proveedor y los requisitos aplicables a tu consultorio.</p>
+</main>
+<script>
+const el=id=>document.getElementById(id);
+let recorder=null,stream=null,chunks=[],blob=null,start=0,tick=null;
+function status(message,type=""){el("status").textContent=message;el("status").className=type}
+function stopTracks(){if(stream)stream.getTracks().forEach(t=>t.stop());stream=null}
+function fmt(ms){let s=Math.floor(ms/1000);return String(Math.floor(s/60)).padStart(2,"0")+":"+String(s%60).padStart(2,"0")}
+function reset(){if(tick)clearInterval(tick);tick=null;stopTracks();recorder=null;chunks=[];blob=null;el("timer").textContent="00:00";el("recordTitle").textContent="Listo para grabar";el("recordSub").textContent="Usa el micrófono de tu dispositivo";el("record").disabled=false;el("stop").disabled=true;el("discard").disabled=true;el("send").disabled=true}
+function mime(){let types=["audio/webm;codecs=opus","audio/webm","audio/mp4"];return types.find(t=>MediaRecorder.isTypeSupported(t))||""}
+el("record").onclick=async()=>{if(!navigator.mediaDevices?.getUserMedia||!window.MediaRecorder){status("Este navegador no permite grabar audio. Prueba Chrome, Edge o Safari reciente.","error");return}
+try{stream=await navigator.mediaDevices.getUserMedia({audio:true});let mt=mime();recorder=new MediaRecorder(stream,mt?{mimeType:mt}:undefined);chunks=[];
+recorder.ondataavailable=e=>{if(e.data?.size)chunks.push(e.data)};
+recorder.onstop=()=>{blob=new Blob(chunks,{type:recorder.mimeType||mt||"audio/webm"});stopTracks();el("recordTitle").textContent="Grabación lista";el("recordSub").textContent="Puedes enviarla a transcripción";el("record").disabled=false;el("stop").disabled=true;el("discard").disabled=false;el("send").disabled=!blob.size;status("Grabación terminada. Pulsa “Transcribir audio”.")};
+recorder.start();start=Date.now();el("recordTitle").textContent="Grabando…";el("recordSub").textContent="Habla con claridad";el("record").disabled=true;el("stop").disabled=false;el("discard").disabled=true;status("Grabación en curso.");
+tick=setInterval(()=>{let elapsed=Date.now()-start;el("timer").textContent=fmt(elapsed);if(elapsed>=600000&&recorder?.state==="recording")recorder.stop()},250)
+}catch(e){stopTracks();status("No se pudo acceder al micrófono. Revisa los permisos del navegador.","error")}};
+el("stop").onclick=()=>{if(recorder?.state==="recording")recorder.stop()};
+el("discard").onclick=()=>{if(recorder?.state==="recording")recorder.stop();reset();status("Grabación descartada.")};
+el("send").onclick=async()=>{if(!blob)return;el("send").disabled=true;el("record").disabled=true;el("discard").disabled=true;status("Transcribiendo audio…");
+try{let form=new FormData(),ext=blob.type.includes("mp4")?"m4a":"webm";form.append("audio",blob,"dictado."+ext);let response=await fetch("/api/transcribe",{method:"POST",body:form}),data=await response.json().catch(()=>({}));if(!response.ok)throw Error(data.detail||"No fue posible completar la transcripción.");el("transcript").value=data.transcript||"";el("copy").disabled=!el("transcript").value.trim();status("Transcripción lista. Revísala y corrige cualquier término antes de usarla.","success")}
+catch(e){status(e.message||"Ocurrió un error al transcribir.","error")}finally{el("send").disabled=!blob;el("record").disabled=false;el("discard").disabled=!blob}};
+el("copy").onclick=async()=>{let value=el("transcript").value;if(!value.trim())return;try{await navigator.clipboard.writeText(value);status("Transcripción copiada al portapapeles.","success")}catch(e){el("transcript").select();status("Seleccionamos el texto. Usa Ctrl+C o Cmd+C para copiarlo.")}};
+el("transcript").oninput=()=>el("copy").disabled=!el("transcript").value.trim();
+window.addEventListener("beforeunload",stopTracks);
+</script></body></html>
