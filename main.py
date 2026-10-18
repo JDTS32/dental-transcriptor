@@ -1,5 +1,8 @@
 import os
 import logging
+import json
+import urllib.request
+import urllib.error
 from fastapi import FastAPI, File, HTTPException, UploadFile
 from fastapi.responses import HTMLResponse, FileResponse
 from google import genai
@@ -23,6 +26,39 @@ async def logo():
 @app.get("/health")
 async def health():
     return {"status": "ok"}
+
+
+@app.post("/api/save-transcript")
+async def save_transcript(payload: dict):
+    transcript = str(payload.get("transcript", "")).strip()
+    if not transcript:
+        raise HTTPException(status_code=400, detail="No hay una transcripción para guardar.")
+    if len(transcript) > 50000:
+        raise HTTPException(status_code=413, detail="La transcripción supera el límite permitido.")
+
+    sheets_url = os.getenv("GOOGLE_SHEETS_WEB_APP_URL")
+    sheets_secret = os.getenv("GOOGLE_SHEETS_SHARED_SECRET")
+    if not sheets_url or not sheets_secret:
+        raise HTTPException(status_code=503, detail="La conexión con Google Sheets todavía no está configurada.")
+
+    body = json.dumps({"secret": sheets_secret, "transcript": transcript}).encode("utf-8")
+    request = urllib.request.Request(
+        sheets_url,
+        data=body,
+        headers={"Content-Type": "application/json"},
+        method="POST",
+    )
+    try:
+        with urllib.request.urlopen(request, timeout=25) as response:
+            result = json.loads(response.read().decode("utf-8"))
+        if not result.get("ok"):
+            raise HTTPException(status_code=502, detail=result.get("error", "Google Sheets no pudo guardar el dictado."))
+        return {"ok": True, "message": "Dictado guardado en Google Sheets."}
+    except HTTPException:
+        raise
+    except Exception as exc:
+        logger.error("Google Sheets save error (%s)", type(exc).__name__)
+        raise HTTPException(status_code=502, detail="No fue posible guardar el dictado en Google Sheets. Inténtalo de nuevo.")
 
 @app.post("/api/transcribe")
 async def transcribe(audio: UploadFile = File(...)):
