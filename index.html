@@ -152,7 +152,7 @@ function reset(){
   el("timer").textContent="00:00";
   el("durationBar").style.width="0%";
   el("remaining").textContent="10:00 disponibles";
-  el("send").classList.remove("ready");
+  el("send").classList.remove("ready");el("saveSheets").disabled=true;
   el("recorder").classList.remove("recording");
   el("recordTitle").textContent="Listo para grabar";
   el("recordSub").textContent="Usa el micrófono de tu dispositivo";
