@@ -89,6 +89,17 @@ textarea{
 }
 textarea:focus{outline:none;border-color:var(--teal);box-shadow:0 0 0 4px #29C2C21F}
 .privacy{font-size:12px;margin:20px 4px 0;color:var(--muted);line-height:1.6}
+.manual{margin-top:18px;border:1px solid var(--line);border-radius:18px;background:#fff;box-shadow:0 10px 30px #0B538C0A;overflow:hidden}
+.manual summary{list-style:none;cursor:pointer;padding:18px 20px;display:flex;align-items:center;justify-content:space-between;gap:12px;font-weight:700;color:var(--ink)}
+.manual summary::-webkit-details-marker{display:none}
+.manual summary::after{content:"＋";font-size:20px;color:var(--teal);font-weight:500}
+.manual[open] summary::after{content:"−"}
+.manual-content{padding:0 20px 20px;color:var(--muted);font-size:14px;line-height:1.65}
+.manual-content h3{font-size:14px;color:var(--ink);margin:18px 0 5px}
+.manual-content p{margin:5px 0}
+.manual-content ol{padding-left:21px;margin:8px 0}
+.manual-content li{padding-left:4px;margin:7px 0}
+.manual-tip{background:var(--mint);border:1px solid var(--mint-2);border-radius:12px;padding:12px 14px;margin-top:14px;color:var(--teal-dark)}
 .credit{margin:30px 0 0;text-align:center;font-size:11px;letter-spacing:.04em;color:#8aa1a5}
 @media(max-width:520px){
   main{padding-top:24px}.panel{padding:18px}h1{font-size:28px}
@@ -129,15 +140,43 @@ textarea:focus{outline:none;border-color:var(--teal);box-shadow:0 0 0 4px #29C2C
     <button class="danger" id="discard" disabled>Descartar</button>
   </div>
   <div id="status" role="status" aria-live="polite">La grabación se enviará para transcripción cuando pulses “Transcribir audio”.</div>
-  <div class="actions" style="margin-top:6px"><button class="secondary" id="send" disabled>Transcribir audio</button><button class="primary" id="saveSheets" disabled>Guardar en Google Sheets</button></div>
+  <div class="actions" style="margin-top:6px"><button class="secondary" id="send" disabled>Transcribir audio</button></div>
 
   <h2>Transcripción</h2>
   <textarea id="transcript" placeholder="Aquí aparecerá la transcripción. Podrás revisarla y editarla antes de copiarla."></textarea>
-  <div class="actions"><button class="secondary" id="copy" disabled>Copiar transcripción</button></div>
+  <div class="actions transcript-actions"><button class="secondary" id="copy" disabled>Copiar transcripción</button><button class="primary" id="saveSheets" disabled>Guardar en Google Sheets</button></div>
   <p class="privacy" style="margin-top:10px">Al guardar, la transcripción se conservará en la hoja de Google Sheets vinculada para consultarla desde el computador.</p>
 </section>
 
-<p class="privacy">Privacidad: la aplicación no mantiene un historial ni guarda permanentemente las grabaciones o transcripciones. El audio se envía al proveedor de transcripción para procesarlo. Antes de usarla con información identificable de pacientes, verifica las condiciones de tratamiento y protección de datos del proveedor y los requisitos aplicables a tu consultorio.</p>
+<details class="manual">
+  <summary>Manual de uso de July Care</summary>
+  <div class="manual-content">
+    <p>July Care convierte el dictado de voz del profesional en una transcripción editable. No redacta ni completa una historia clínica.</p>
+    <h3>Cómo realizar un dictado</h3>
+    <ol>
+      <li>Permite el acceso al micrófono cuando el navegador lo solicite. Puedes usar un celular o un computador.</li>
+      <li>Pulsa <strong>Iniciar grabación</strong> y dicta con claridad. La duración máxima es de 10 minutos.</li>
+      <li>Cuando termines, pulsa <strong>Detener</strong>. Si no deseas conservar esa grabación, pulsa <strong>Descartar</strong>.</li>
+      <li>Pulsa <strong>Transcribir audio</strong> y espera a que aparezca el texto.</li>
+      <li>Lee y corrige la transcripción en el recuadro. Verifica especialmente nombres, medicamentos, procedimientos y números de dientes.</li>
+    </ol>
+    <h3>Cómo usar la transcripción</h3>
+    <p><strong>Copiar transcripción:</strong> copia el texto editado para pegarlo en el sistema de historia clínica que utilice el consultorio.</p>
+    <p><strong>Guardar en Google Sheets:</strong> envía el texto editado a la hoja vinculada. Cada guardado crea una nueva fila en la pestaña «Dictados».</p>
+    <h3>Consultar dictados desde otro dispositivo</h3>
+    <p>Si grabas desde el celular, pulsa «Guardar en Google Sheets». Después abre la misma hoja de cálculo desde el computador con la cuenta autorizada para consultarla. No necesitas emparejar los dispositivos.</p>
+    <h3>Recomendaciones</h3>
+    <ul>
+      <li>Habla a un ritmo natural y procura reducir el ruido de fondo.</li>
+      <li>Revisa siempre el texto antes de copiarlo o guardarlo. La transcripción puede contener errores.</li>
+      <li>Si el texto queda incompleto o incorrecto, edítalo antes de guardarlo o realiza un nuevo dictado.</li>
+      <li>Descartar elimina la grabación de la sesión actual; no elimina filas que ya hayas guardado en Google Sheets.</li>
+    </ul>
+    <div class="manual-tip"><strong>Importante:</strong> el audio se procesa mediante el proveedor de transcripción. La aplicación no conserva un historial propio, pero las transcripciones que guardes sí permanecen en Google Sheets hasta que alguien autorizado las elimine. Mantén la hoja privada y sigue las políticas de protección de datos del consultorio.</div>
+  </div>
+</details>
+
+<p class="privacy">Privacidad: July Care no mantiene un historial propio de grabaciones ni transcripciones. El audio se envía al proveedor de transcripción para procesarlo. Si guardas el texto, se almacena en la hoja de Google Sheets vinculada. Antes de usarla con información identificable de pacientes, verifica las condiciones de tratamiento y protección de datos del proveedor y los requisitos aplicables a tu consultorio.</p>
 <p class="credit">Desarrollado por JDTS · 2026</p>
 </main>
 <script>
