@@ -36,11 +36,11 @@ async def transcribe(audio: UploadFile = File(...)):
     if len(data) > MAX_AUDIO_BYTES:
         raise HTTPException(status_code=413, detail="El audio supera el límite de 25 MB.")
     prompt = """Transcribe literalmente y en español el audio dictado por un odontólogo después de una consulta. Devuelve únicamente la transcripción, sin títulos, resúmenes, interpretaciones ni formato de historia clínica. Conserva el contenido, orden y sentido exactos. Reconoce términos odontológicos, procedimientos, materiales, medicamentos y anatomía dental. Conserva los números de dientes tal como se dictan. No inventes ni completes datos por contexto. Si algo no se entiende, escribe [inaudible]. Usa puntuación razonable sin reescribir."""
-    logger.info("Transcription request received: mime=%s bytes=%s model=%s", mime, len(data), os.getenv("GEMINI_MODEL", "gemini-2.5-flash"))
+    logger.info("Transcription request received: mime=%s bytes=%s model=%s", mime, len(data), os.getenv("GEMINI_MODEL", "gemini-3.8-flash"))
     try:
         client = genai.Client(api_key=key)
         result = client.models.generate_content(
-            model=os.getenv("GEMINI_MODEL", "gemini-2.5-flash"),
+            model=os.getenv("GEMINI_MODEL", "gemini-3.8-flash"),
             contents=[prompt, types.Part.from_bytes(data=data, mime_type=mime)],
             config=types.GenerateContentConfig(temperature=0),
         )
