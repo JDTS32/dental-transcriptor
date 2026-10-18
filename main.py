@@ -1,7 +1,7 @@
 import os
 import logging
 from fastapi import FastAPI, File, HTTPException, UploadFile
-from fastapi.responses import HTMLResponse
+from fastapi.responses import HTMLResponse, FileResponse
 from google import genai
 from google.genai import types
 
@@ -15,6 +15,10 @@ MAX_AUDIO_BYTES = 25 * 1024 * 1024
 async def home():
     with open("index.html", "r", encoding="utf-8") as page:
         return page.read()
+
+@app.get("/logo-july.png")
+async def logo():
+    return FileResponse("logo-july.png", media_type="image/png")
 
 @app.get("/health")
 async def health():
