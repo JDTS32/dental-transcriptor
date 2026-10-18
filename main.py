@@ -1,8 +1,12 @@
 import os
+import logging
 from fastapi import FastAPI, File, HTTPException, UploadFile
 from fastapi.responses import HTMLResponse
 from google import genai
 from google.genai import types
+
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger("dental_transcriptor")
 
 app = FastAPI(title="Dental Transcriptor")
 MAX_AUDIO_BYTES = 25 * 1024 * 1024
@@ -32,6 +36,7 @@ async def transcribe(audio: UploadFile = File(...)):
     if len(data) > MAX_AUDIO_BYTES:
         raise HTTPException(status_code=413, detail="El audio supera el límite de 25 MB.")
     prompt = """Transcribe literalmente y en español el audio dictado por un odontólogo después de una consulta. Devuelve únicamente la transcripción, sin títulos, resúmenes, interpretaciones ni formato de historia clínica. Conserva el contenido, orden y sentido exactos. Reconoce términos odontológicos, procedimientos, materiales, medicamentos y anatomía dental. Conserva los números de dientes tal como se dictan. No inventes ni completes datos por contexto. Si algo no se entiende, escribe [inaudible]. Usa puntuación razonable sin reescribir."""
+    logger.info("Transcription request received: mime=%s bytes=%s model=%s", mime, len(data), os.getenv("GEMINI_MODEL", "gemini-2.5-flash"))
     try:
         client = genai.Client(api_key=key)
         result = client.models.generate_content(
@@ -45,7 +50,10 @@ async def transcribe(audio: UploadFile = File(...)):
         return {"transcript": text}
     except HTTPException:
         raise
-    except Exception:
+    except Exception as exc:
+        # Log technical diagnostics only; never log the audio, transcript, or API key.
+        message = str(exc).replace(key, "[REDACTED]")[:500]
+        logger.error("Gemini API error (%s): %s", type(exc).__name__, message)
         raise HTTPException(status_code=502, detail="No fue posible transcribir el audio. Inténtalo de nuevo.")
     finally:
         del data
