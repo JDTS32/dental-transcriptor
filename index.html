@@ -28,6 +28,14 @@ body{
 }
 main{max-width:780px;margin:0 auto;padding:40px 16px 56px}
 header{display:flex;align-items:center;gap:16px;margin-bottom:28px}
+.help-button{margin-left:auto;white-space:nowrap;padding:10px 14px;background:#fff;border:1px solid var(--line);color:var(--teal-dark);font-size:13px}
+.manual-dialog{width:min(620px,calc(100% - 28px));max-height:min(82vh,760px);padding:0;border:1px solid var(--line);border-radius:20px;box-shadow:0 24px 80px #062c4660;color:var(--ink)}
+.manual-dialog::backdrop{background:#062c4680;backdrop-filter:blur(3px)}
+.manual-dialog-header{position:sticky;top:0;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:18px 20px;background:#fff;border-bottom:1px solid var(--line)}
+.manual-dialog-header h2{margin:0;font-size:18px}
+.manual-dialog-header h2::before{display:none}
+.manual-close{padding:7px 11px;background:var(--mint);color:var(--teal-dark);font-size:20px;line-height:1}
+.manual-dialog .manual-content{padding:8px 22px 24px;overflow-y:auto}
 .logo{
   width:60px;height:60px;flex:none;display:grid;place-items:center;
 }
@@ -148,8 +156,11 @@ textarea:focus{outline:none;border-color:var(--teal);box-shadow:0 0 0 4px #29C2C
   <p class="privacy" style="margin-top:10px">Al guardar, la transcripción se conservará en la hoja de Google Sheets vinculada para consultarla desde el computador.</p>
 </section>
 
-<details class="manual">
-  <summary>Manual de uso de July Care</summary>
+<dialog class="manual-dialog" id="manualDialog" aria-labelledby="manualTitle">
+  <div class="manual-dialog-header">
+    <h2 id="manualTitle">Manual de uso de July Care</h2>
+    <button class="manual-close" id="closeManual" type="button" aria-label="Cerrar manual">×</button>
+  </div>
   <div class="manual-content">
     <p>July Care convierte el dictado de voz del profesional en una transcripción editable. No redacta ni completa una historia clínica.</p>
     <h3>Cómo realizar un dictado</h3>
@@ -290,5 +301,9 @@ el("saveSheets").onclick=async()=>{
   }catch(e){status(e.message||"Ocurrió un error al guardar el dictado.","error");}
   finally{el("saveSheets").disabled=!el("transcript").value.trim()}
 };
+const manualDialog=el("manualDialog");
+el("openManual").onclick=()=>manualDialog.showModal();
+el("closeManual").onclick=()=>manualDialog.close();
+manualDialog.addEventListener("click",event=>{if(event.target===manualDialog)manualDialog.close()});
 window.addEventListener("beforeunload",stopTracks);
 </script></body></html>
