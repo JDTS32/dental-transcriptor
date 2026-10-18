@@ -129,11 +129,12 @@ textarea:focus{outline:none;border-color:var(--teal);box-shadow:0 0 0 4px #29C2C
     <button class="danger" id="discard" disabled>Descartar</button>
   </div>
   <div id="status" role="status" aria-live="polite">La grabación se enviará para transcripción cuando pulses “Transcribir audio”.</div>
-  <div class="actions" style="margin-top:6px"><button class="secondary" id="send" disabled>Transcribir audio</button></div>
+  <div class="actions" style="margin-top:6px"><button class="secondary" id="send" disabled>Transcribir audio</button><button class="primary" id="saveSheets" disabled>Guardar en Google Sheets</button></div>
 
   <h2>Transcripción</h2>
   <textarea id="transcript" placeholder="Aquí aparecerá la transcripción. Podrás revisarla y editarla antes de copiarla."></textarea>
   <div class="actions"><button class="secondary" id="copy" disabled>Copiar transcripción</button></div>
+  <p class="privacy" style="margin-top:10px">Al guardar, la transcripción se conservará en la hoja de Google Sheets vinculada para consultarla desde el computador.</p>
 </section>
 
 <p class="privacy">Privacidad: la aplicación no mantiene un historial ni guarda permanentemente las grabaciones o transcripciones. El audio se envía al proveedor de transcripción para procesarlo. Antes de usarla con información identificable de pacientes, verifica las condiciones de tratamiento y protección de datos del proveedor y los requisitos aplicables a tu consultorio.</p>
@@ -162,7 +163,7 @@ function mime(){let types=["audio/webm;codecs=opus","audio/webm","audio/mp4"];re
 el("record").onclick=async()=>{
   // Una nueva grabación reemplaza cualquier audio y transcripción anteriores.
   blob=null;chunks=[];el("send").disabled=true;el("send").classList.remove("ready");
-  el("transcript").value="";el("copy").disabled=true;
+  el("transcript").value="";el("copy").disabled=true;el("saveSheets").disabled=true;
   el("timer").textContent="00:00";el("durationBar").style.width="0%";
   el("remaining").textContent="10:00 disponibles";
   if(!navigator.mediaDevices?.getUserMedia||!window.MediaRecorder){status("Este navegador no permite grabar audio. Prueba Chrome, Edge o Safari reciente.","error");return}
@@ -225,6 +226,7 @@ el("send").onclick=async()=>{
     if(!response.ok)throw Error(data.detail||"No fue posible completar la transcripción.");
     el("transcript").value=data.transcript||"";
     el("copy").disabled=!el("transcript").value.trim();
+    el("saveSheets").disabled=!el("transcript").value.trim();
     status("Transcripción lista. Revísala y corrige cualquier término antes de usarla.","success")
   }catch(e){status(e.message||"Ocurrió un error al transcribir.","error")}
   finally{el("send").disabled=!blob;el("record").disabled=false;el("discard").disabled=!blob}
@@ -235,6 +237,19 @@ el("copy").onclick=async()=>{
   try{await navigator.clipboard.writeText(value);status("Transcripción copiada al portapapeles.","success")}
   catch(e){el("transcript").select();status("Seleccionamos el texto. Usa Ctrl+C o Cmd+C para copiarlo.")}
 };
-el("transcript").oninput=()=>el("copy").disabled=!el("transcript").value.trim();
+el("transcript").oninput=()=>{const hasText=!!el("transcript").value.trim();el("copy").disabled=!hasText;el("saveSheets").disabled=!hasText};
+
+el("saveSheets").onclick=async()=>{
+  const transcript=el("transcript").value.trim();if(!transcript)return;
+  el("saveSheets").disabled=true;
+  status("Guardando dictado en Google Sheets…");
+  try{
+    const response=await fetch("/api/save-transcript",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({transcript})});
+    const data=await response.json().catch(()=>({}));
+    if(!response.ok)throw Error(data.detail||"No fue posible guardar el dictado.");
+    status("Dictado guardado en Google Sheets. Ya puedes consultarlo desde el computador.","success");
+  }catch(e){status(e.message||"Ocurrió un error al guardar el dictado.","error");}
+  finally{el("saveSheets").disabled=!el("transcript").value.trim()}
+};
 window.addEventListener("beforeunload",stopTracks);
 </script></body></html>
