@@ -110,6 +110,9 @@ textarea:focus{outline:none;border-color:var(--teal);box-shadow:0 0 0 4px #29C2C
 .manual-content ol{padding-left:21px;margin:8px 0}
 .manual-content li{padding-left:4px;margin:7px 0}
 .manual-tip{background:var(--mint);border:1px solid var(--mint-2);border-radius:12px;padding:12px 14px;margin-top:14px;color:var(--teal-dark)}
+.sheet-link{display:inline-flex;align-items:center;gap:8px;margin-top:10px;padding:10px 14px;border:1px solid var(--mint-2);border-radius:10px;background:var(--mint);color:var(--teal-dark);font-weight:700;text-decoration:none}
+.sheet-link:hover{background:var(--mint-2);text-decoration:underline}
+.sheet-link:focus-visible{outline:3px solid #29C2C255;outline-offset:2px}
 .credit{margin:30px 0 0;text-align:center;font-size:11px;letter-spacing:.04em;color:#8aa1a5}
 @media(max-width:520px){
   main{padding-top:24px}.panel{padding:18px}h1{font-size:28px}
@@ -178,7 +181,7 @@ textarea:focus{outline:none;border-color:var(--teal);box-shadow:0 0 0 4px #29C2C
     <p><strong>Copiar transcripción:</strong> copia el texto editado para pegarlo en el sistema de historia clínica que utilice el consultorio.</p>
     <p><strong>Guardar en Google Sheets:</strong> envía el texto editado a la hoja vinculada. Cada guardado crea una nueva fila en la pestaña «Dictados».</p>
     <h3>Consultar dictados desde otro dispositivo</h3>
-    <p>Si grabas desde el celular, pulsa «Guardar en Google Sheets». Después abre la misma hoja de cálculo desde el computador con la cuenta autorizada para consultarla. No necesitas emparejar los dispositivos. El link del Google Sheets es: <<https://docs.google.com/spreadsheets/d/1iQVfEjBzYr2WdneM972r6AN957gG9xDziqzEKpiwEwM/edit?usp=sharing>>. </p>
+    <p>Si grabas desde el celular, pulsa «Guardar en Google Sheets». Después abre la misma hoja de cálculo desde el computador con la cuenta autorizada para consultarla. No necesitas emparejar los dispositivos. Abre la hoja desde el siguiente enlace: <a class="sheet-link" href="https://docs.google.com/spreadsheets/d/1iQVfEjBzYr2WdneM972r6AN957gG9xDziqzEKpiwEwM/edit?usp=sharing" target="_blank" rel="noopener noreferrer">Abrir Google Sheets <span aria-hidden="true">↗</span></a>. </p>
     <h3>Recomendaciones</h3>
     <ul>
       <li>Habla a un ritmo natural y procura reducir el ruido de fondo.</li>
