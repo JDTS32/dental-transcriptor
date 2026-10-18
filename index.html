@@ -6,14 +6,14 @@
 <title>July Care</title>
 <style>
 :root{
-  --ink:#0f2a33;
-  --muted:#5b7680;
-  --teal:#0e9aa7;
-  --teal-dark:#0a7683;
-  --mint:#e6f6f5;
-  --mint-2:#d2efed;
-  --line:#dcebea;
-  --bg:#f3fbfa;
+  --ink:#0B538C;
+  --muted:#617B8A;
+  --teal:#1793B3;
+  --teal-dark:#0B538C;
+  --mint:#EAF9F9;
+  --mint-2:#D5F2F1;
+  --line:#D9EDEF;
+  --bg:#FFFFFF;
   --rec:#e5484d;
   font-family:"Inter",system-ui,-apple-system,"Segoe UI",sans-serif;
   color:var(--ink);
@@ -22,8 +22,8 @@
 body{
   margin:0;min-height:100vh;
   background:
-    radial-gradient(900px 400px at 85% -10%,#c9eeea 0%,transparent 60%),
-    radial-gradient(700px 400px at -10% 10%,#e0f4ff 0%,transparent 55%),
+    radial-gradient(900px 400px at 85% -10%,#DDF7F5 0%,transparent 60%),
+    radial-gradient(700px 400px at -10% 10%,#E8F5FC 0%,transparent 55%),
     var(--bg);
 }
 main{max-width:780px;margin:0 auto;padding:40px 16px 56px}
@@ -39,7 +39,7 @@ h1 span{color:var(--teal)}
 .lead{margin:0 0 22px;color:var(--muted);line-height:1.6;max-width:620px}
 .panel{
   background:#fff;border:1px solid var(--line);border-radius:24px;padding:28px;
-  box-shadow:0 18px 50px #0e5f6a14;
+  box-shadow:0 18px 50px #0B538C12;
 }
 .recorder{
   display:flex;align-items:center;gap:18px;flex-wrap:wrap;
@@ -67,16 +67,16 @@ h1 span{color:var(--teal)}
 .limit-fill{height:100%;width:0;background:var(--teal);border-radius:99px;transition:width .2s linear}
 .limit-label{font-size:11px;color:var(--muted);text-align:right;margin:5px 2px 0}
 .recorder.recording~.limit .limit-fill{background:var(--rec)}
-.secondary.ready{background:linear-gradient(135deg,var(--teal),#17b3b0);color:#fff;box-shadow:0 6px 16px #0e9aa738}
+.secondary.ready{background:linear-gradient(135deg,#1793B3,#29C2C2);color:#fff;box-shadow:0 6px 16px #1793B338}
 .actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:18px}
 button{
   border:0;border-radius:12px;padding:12px 18px;font:inherit;font-weight:650;cursor:pointer;
   transition:transform .12s,box-shadow .12s,background .12s;
 }
 button:hover:not(:disabled){transform:translateY(-1px)}
-button:focus-visible{outline:3px solid #0e9aa755;outline-offset:2px}
+button:focus-visible{outline:3px solid #29C2C255;outline-offset:2px}
 button:disabled{opacity:.4;cursor:not-allowed}
-.primary{background:linear-gradient(135deg,var(--teal),#17b3b0);color:#fff;box-shadow:0 6px 16px #0e9aa738}
+.primary{background:linear-gradient(135deg,#1793B3,#29C2C2);color:#fff;box-shadow:0 6px 16px #1793B338}
 .secondary{background:var(--mint);color:var(--teal-dark)}
 .danger{background:#fff0f0;color:#b42318}
 #status{min-height:24px;margin-top:16px;color:var(--muted);font-size:14px;line-height:1.5}
@@ -87,7 +87,7 @@ textarea{
   width:100%;min-height:260px;padding:18px;border:1px solid var(--line);border-radius:16px;
   font-family:inherit;font-size:15px;line-height:1.7;resize:vertical;color:var(--ink);background:#fbfefe;
 }
-textarea:focus{outline:none;border-color:var(--teal);box-shadow:0 0 0 4px #0e9aa71f}
+textarea:focus{outline:none;border-color:var(--teal);box-shadow:0 0 0 4px #29C2C21F}
 .privacy{font-size:12px;margin:20px 4px 0;color:var(--muted);line-height:1.6}
 .credit{margin:30px 0 0;text-align:center;font-size:11px;letter-spacing:.04em;color:#8aa1a5}
 @media(max-width:520px){
