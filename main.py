@@ -23,6 +23,10 @@ async def home():
 async def logo():
     return FileResponse("logo-july.png", media_type="image/png")
 
+@app.get("/favicon.svg")
+async def favicon():
+    return FileResponse("favicon.svg", media_type="image/svg+xml")
+
 @app.get("/health")
 async def health():
     return {"status": "ok"}
